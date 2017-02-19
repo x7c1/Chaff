@@ -16,4 +16,10 @@ object ChaffSettings {
     )
   ))
 
+  lazy val forPlugin = new SettingList(common ++
+    Seq(
+      sbtPlugin := true,
+      bintrayRepository := "sbt-plugins"
+    )
+  )
 }
