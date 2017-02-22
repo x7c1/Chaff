@@ -1,6 +1,27 @@
 package x7c1.chaff.reader
 
+import scala.collection.immutable
+
 object ReaderRunner {
+
+  def run2[X, A](x: X, reader: Reader[X, A]): A = {
+
+    @scala.annotation.tailrec
+    def loop(stack: immutable.Stack[Any]): A = {
+      stack.pop2 match {
+        case (Reader2(fa, f), next) =>
+          loop(next.push(f, fa))
+        case (fa: Reader[X, _], next) =>
+          loop(next push fa.run(x))
+        case (value, next) if next.nonEmpty =>
+          val (f, next2) = next.pop2
+          loop(next2 push f.asInstanceOf[Any => Any](value))
+        case (value, _) =>
+          value.asInstanceOf[A]
+      }
+    }
+    loop(immutable.Stack(reader))
+  }
 
   def run[X, A](x: X, reader: Reader[X, A]): A = {
     val stack = collection.mutable.Stack[Any](reader)
