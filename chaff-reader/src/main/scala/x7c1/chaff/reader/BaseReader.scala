@@ -24,6 +24,8 @@ trait BaseProvider[R[X, A] <: BaseReader[X, A]] {
 
   def apply[X, A](f: X => A): R[X, A]
 
+  def apply2[X, A, B](fa: R[X, A])(f: A => R[X, B]): R[X, B]
+
   implicit class RichUnitReader[A](reader: R[A, Unit])
     extends HasFlatMap.ForUnit[({type L[T] = R[A, T]})#L](reader)
 
@@ -39,7 +41,7 @@ trait BaseProvider[R[X, A] <: BaseReader[X, A]] {
     }
 
     override def flatMap[A, B](fa: R[X, A])(f: A => R[X, B]) = {
-      BaseProvider.this.apply(x => f(fa run x) run x)
+      BaseProvider.this.apply2(fa)(f)
     }
   }
 
