@@ -4,6 +4,24 @@ import scala.collection.immutable
 
 object ReaderRunner {
 
+  def run3[X, A](x: X, reader: Reader[X, A]): A = {
+
+    @scala.annotation.tailrec
+    def loop(stack: List[Any]): A = {
+      stack match {
+        case Reader2(fa, f) :: tail =>
+          loop(fa :: f :: tail)
+        case (fa: Reader[X, _]) :: tail =>
+          loop(fa.run(x) :: tail)
+        case head :: f :: tail =>
+          loop(f.asInstanceOf[Any => Any](head) :: tail)
+        case head :: Nil =>
+          head.asInstanceOf[A]
+      }
+    }
+    loop(List(reader))
+  }
+
   def run2[X, A](x: X, reader: Reader[X, A]): A = {
 
     @scala.annotation.tailrec
