@@ -1,5 +1,6 @@
 package x7c1.chaff.reader
 
+
 trait FlatMapped[X, A, B] extends BaseReader[X, B] {
 
   def fa: Type[A]

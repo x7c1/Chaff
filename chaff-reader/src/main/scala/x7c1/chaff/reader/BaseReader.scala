@@ -1,5 +1,7 @@
 package x7c1.chaff.reader
 
+import x7c1.chaff.core.{HasFlatMap, Monad}
+
 import scala.language.{higherKinds, reflectiveCalls}
 
 
