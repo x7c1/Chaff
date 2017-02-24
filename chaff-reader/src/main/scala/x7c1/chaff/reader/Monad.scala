@@ -2,13 +2,13 @@ package x7c1.chaff.reader
 
 import scala.language.higherKinds
 
-trait Monad[F[_]] extends HasUnit[F] with HasFlatMap[F]
+trait Monad[F[_]] extends HasPure[F] with HasFlatMap[F]
 
 object Monad {
 
   class ForUnits[B[_] : Monad](readers: Seq[B[Unit]]) {
     def uniteAll: B[Unit] = {
-      val nop = implicitly[Monad[B]] unit {}
+      val nop = implicitly[Monad[B]] pure {}
       readers.foldLeft(nop) {
         (a, b) => HasFlatMap.append(a, b)
       }
@@ -17,8 +17,8 @@ object Monad {
 
 }
 
-trait HasUnit[F[_]] {
-  def unit[A](a: A): F[A]
+trait HasPure[F[_]] {
+  def pure[A](a: A): F[A]
 }
 
 trait HasFlatMap[F[_]] {

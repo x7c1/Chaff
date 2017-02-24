@@ -12,19 +12,20 @@ trait BaseReader[X, A] {
   def underlying: Type[A]
 
   def map[B](f: A => B)(implicit m: Monad[Type]): Type[B] = {
-    m.flatMap(underlying)(a => m unit f(a))
+    m.flatMap(underlying)(a => m pure f(a))
   }
 
   def flatMap[B](f: A => Type[B])(implicit m: Monad[Type]): Type[B] = {
     m.flatMap(underlying)(f)
   }
+
 }
 
 trait BaseProvider[R[X, A] <: BaseReader[X, A]] {
 
   def apply[X, A](f: X => A): R[X, A]
 
-  def apply2[X, A, B](fa: R[X, A])(f: A => R[X, B]): R[X, B]
+  def flatMap[X, A, B](fa: R[X, A])(f: A => R[X, B]): R[X, B]
 
   implicit class RichUnitReader[A](reader: R[A, Unit])
     extends HasFlatMap.ForUnit[({type L[T] = R[A, T]})#L](reader)
@@ -36,12 +37,12 @@ trait BaseProvider[R[X, A] <: BaseReader[X, A]] {
 
   private class MonadImpl[X] extends Monad[({type L[T] = R[X, T]})#L] {
 
-    override def unit[A](a: A) = {
+    override def pure[A](a: A) = {
       BaseProvider.this.apply(_ => a)
     }
 
     override def flatMap[A, B](fa: R[X, A])(f: A => R[X, B]) = {
-      BaseProvider.this.apply2(fa)(f)
+      BaseProvider.this.flatMap(fa)(f)
     }
   }
 
