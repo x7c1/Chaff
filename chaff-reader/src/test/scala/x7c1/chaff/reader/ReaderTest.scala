@@ -39,6 +39,12 @@ class ReaderTest extends FlatSpecLike with Matchers {
     val store1 = getLength map (n => print(n))
     val store2 = getLength map (n => print(n * 2))
 
+    /*
+    val combined = store1 append store2
+    val n = (1 to 20000).map(_ => combined)
+    n.uniteAll run "abc"
+    */
+
     Seq(store1, store2).uniteAll run "hello"
     buffer shouldBe Seq(5, 10)
   }
