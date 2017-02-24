@@ -2,41 +2,11 @@ package x7c1.chaff.reader
 
 import org.scalatest.{FlatSpecLike, Matchers}
 
-import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-class ReaderRunnerTest extends FlatSpecLike with Matchers {
+class ReaderRunTest extends FlatSpecLike with Matchers {
 
-  "ReaderRunner" can "traverse nodes by post-order" in {
-    val node = ReaderNodeSample(
-      label = "F",
-      left = Some(ReaderNodeSample(
-        label = "B",
-        left = Some(ReaderNodeSample(
-          label = "A"
-        )),
-        right = Some(ReaderNodeSample(
-          label = "D",
-          left = Some(ReaderNodeSample("C")),
-          right = Some(ReaderNodeSample("E"))
-        ))
-      )),
-      right = Some(ReaderNodeSample(
-        label = "G",
-        right = Some(ReaderNodeSample(
-          label = "I",
-          left = Some(ReaderNodeSample("H"))
-        ))
-      ))
-    )
-    val buffer = mutable.ArrayBuffer[String]()
-    ReaderRunner.traverse(node) {
-      label => buffer += label
-    }
-    buffer shouldBe "A,C,E,D,B,H,I,G,F".split(",")
-  }
-
-  it can "traverse Readers[A, Unit] in order" in {
+  "Reader#run" can "traverse Readers[A, Unit] in order" in {
     val observer = ArrayBuffer[String]()
 
     def dispatch(n: Int) = Reader[String, Unit] {
