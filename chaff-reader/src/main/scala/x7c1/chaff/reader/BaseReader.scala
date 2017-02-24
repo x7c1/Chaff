@@ -1,6 +1,6 @@
 package x7c1.chaff.reader
 
-import x7c1.chaff.core.{HasFlatMap, Monad}
+import x7c1.chaff.core.{FlatMap$, Monad}
 
 import scala.language.{higherKinds, reflectiveCalls}
 
@@ -30,7 +30,7 @@ trait BaseProvider[R[X, A] <: BaseReader[X, A]] {
   def flatMap[X, A, B](fa: R[X, A])(f: A => R[X, B]): R[X, B]
 
   implicit class RichUnitReader[A](reader: R[A, Unit])
-    extends HasFlatMap.ForUnit[({type L[T] = R[A, T]})#L](reader)
+    extends FlatMap.ForUnit[({type L[T] = R[A, T]})#L](reader)
 
   implicit class RichUnitReaders[A](readers: Seq[R[A, Unit]])
     extends Monad.ForUnits[({type L[T] = R[A, T]})#L](readers)
