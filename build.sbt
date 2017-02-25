@@ -16,3 +16,9 @@ lazy val `chaff-process` = project.
     libraryDependencies ++= forTests
   ).
   dependsOn(`chaff-reader`)
+
+lazy val `chaff-publish` = project.
+  settings(forPlugin).
+  settings(
+    version := "0.1.0"
+  )
