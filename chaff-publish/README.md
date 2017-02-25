@@ -1,6 +1,6 @@
 
 
-## `Chaff-publish`
+## Chaff-publish
 
 Provides sbt tasks to publish artifacts.
 
