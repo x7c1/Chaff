@@ -9,13 +9,13 @@ trait FlatMap[F[_]] {
 
 object FlatMap {
 
-  def append[F[_] : FlatMap](a: F[Unit], b: F[Unit]): F[Unit] = {
+  def append[F[_] : FlatMap, A](a: F[Unit], b: F[A]): F[A] = {
     val i = implicitly[FlatMap[F]]
     i.flatMap(a)(_ => b)
   }
 
-  class ForUnit[B[_] : FlatMap](reader: B[Unit]) {
-    def append(next: B[Unit]): B[Unit] = {
+  class ForUnit[F[_] : FlatMap](reader: F[Unit]) {
+    def append[A](next: F[A]): F[A] = {
       FlatMap.append(reader, next)
     }
   }
