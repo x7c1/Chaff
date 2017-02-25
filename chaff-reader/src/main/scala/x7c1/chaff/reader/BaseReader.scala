@@ -1,6 +1,6 @@
 package x7c1.chaff.reader
 
-import x7c1.chaff.core.{FlatMap$, Monad}
+import x7c1.chaff.core.{FlatMap, Monad}
 
 import scala.language.{higherKinds, reflectiveCalls}
 

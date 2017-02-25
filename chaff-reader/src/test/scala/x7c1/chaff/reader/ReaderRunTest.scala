@@ -6,7 +6,7 @@ import scala.collection.mutable.ArrayBuffer
 
 class ReaderRunTest extends FlatSpecLike with Matchers {
 
-  "Reader#run" can "traverse Readers[A, Unit] in order" in {
+  "Reader#run" can "traverse Reader[A, Unit] in order" in {
     val observer = ArrayBuffer[String]()
 
     def dispatch(n: Int) = Reader[String, Unit] {
@@ -23,7 +23,7 @@ class ReaderRunTest extends FlatSpecLike with Matchers {
     observer shouldBe "x10,x12,x14,x16,x20,x30,x32,x34,x36".split(",")
   }
 
-  it can "traverse Readers[A, Int] in order" in {
+  it can "traverse Reader[A, Int] in order" in {
     val observer = ArrayBuffer[Int]()
 
     def dispatch(n: Int) = Reader[Int, Int] { i =>
@@ -44,6 +44,22 @@ class ReaderRunTest extends FlatSpecLike with Matchers {
 
     reader run 3 shouldBe 36
     observer shouldBe Seq(11, 21, 13, 23)
+  }
+
+  "Seq[Reader[A, Unit]]#uniteAll" can "keep its order when traversing" in {
+    val observer = ArrayBuffer[String]()
+
+    def dispatch(n: Int) = Reader[String, Unit] {
+      s => observer += s"$s$n"
+    }
+
+    val readers = Seq(
+      dispatch(10) append dispatch(12) append (dispatch(14) append dispatch(16)),
+      dispatch(20),
+      dispatch(30) append (dispatch(32) append dispatch(34)) append dispatch(36)
+    )
+    readers.uniteAll run "x"
+    observer shouldBe "x10,x12,x14,x16,x20,x30,x32,x34,x36".split(",")
   }
 
 }
