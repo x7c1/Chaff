@@ -33,13 +33,13 @@ class ProcessRunnerImplicitsTest extends FreeSpecLike with Matchers {
         } yield {
           ProcessRunner(Seq("echo", s"${r1 + r2}"))
         }
-        "should output Right message " - {
+        "should output Right message " in {
           val logger = new BufferedLogger
           target.asLoggerApplied run logger
           logger.lines should contain("[run] echo 123")
           logger.lines should contain("[done] 0")
         }
-        "should output command to logger" - {
+        "should output command to logger" in {
           val logger = new BufferedLogger
           target.asLoggerApplied run logger
           logger.lines should contain("123")
@@ -52,7 +52,7 @@ class ProcessRunnerImplicitsTest extends FreeSpecLike with Matchers {
         } yield {
           ProcessRunner(Seq("echo", s"${r1 + r2}"))
         }
-        "should output Left message" - {
+        "should output Left message" in {
           val logger = new BufferedLogger
           target.asLoggerApplied run logger
           logger.lines should contain("[failed] error1")
