@@ -34,7 +34,7 @@ case class ProcessRunner(command: Seq[String]) {
     def lines: To[Either[ProcessError, Seq[String]]] =
       LogReader { logger =>
         Try {
-          builder lines_! logger
+          builder lines logger
         } match {
           case Success(lines) => Right(lines.toIndexedSeq)
           case Failure(exception) => Left(ProcessError(exception))
