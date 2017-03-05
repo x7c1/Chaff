@@ -11,9 +11,9 @@ trait Monad[F[_]] extends Pure[F] with FlatMap[F] with Functor[F] {
 
 object Monad {
 
-  class ForUnits[B[_] : Monad](readers: Seq[B[Unit]]) {
-    def uniteAll: B[Unit] = {
-      val nop = implicitly[Monad[B]] pure {}
+  class ForUnits[F[_] : Monad](readers: Seq[F[Unit]]) {
+    def uniteAll: F[Unit] = {
+      val nop = implicitly[Monad[F]] pure {}
       readers.foldLeft(nop) {
         (a, b) => FlatMap.append(a, b)
       }
