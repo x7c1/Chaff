@@ -35,7 +35,7 @@ object HasProcessLogger {
         case Right(right) => implicitly[HasLogMessage[RIGHT]] messageOf right
         case Left(left) => implicitly[HasLogMessage[LEFT]] messageOf left
       }
-      monad.flatMap(r)(_.toReader[X, R[X, ?]])
+      monad.flatMap(r)(_.toReader[X, R])
     }
   }
 
