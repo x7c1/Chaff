@@ -1,6 +1,6 @@
 package x7c1.chaff.process
 
-import x7c1.chaff.core.{Apply, Determined, Monad, Pure}
+import x7c1.chaff.core.{Determined, FlatMap, Functor}
 
 import scala.language.{higherKinds, reflectiveCalls}
 
@@ -20,11 +20,10 @@ object LogMessage {
     X <: HasProcessLogger,
     R[X0, A0]
     ](implicit
-      pure: Pure[R[X, ?]],
-      apply: Apply[R[X, ?]],
+      functor: Functor[R[X, ?]],
       determined: Determined[R[X, ?], X]): R[X, Unit] = {
 
-      val rf: R[X, X => Unit] = pure pure { context =>
+      val f: X => Unit = context => {
         val logger = context.logger
         message match {
           case _: Error => message.messages foreach (logger.error(_))
@@ -32,16 +31,16 @@ object LogMessage {
         }
       }
       val rx: R[X, X] = determined.applied
-      apply(rf)(rx)
+      functor.map(rx)(f)
     }
+
   }
 
   implicit class LogMessageReaders[
   X <: HasProcessLogger,
   R[X0, A0]](readers: Seq[R[X, LogMessage]])
     (implicit
-      monad: Monad[R[X, ?]],
-      apply: Apply[R[X, ?]],
+      monad: FlatMap[R[X, ?]] with Functor[R[X, ?]],
       determined: Determined[R[X, ?], X]) {
 
     def uniteSequentially: R[X, Unit] = {

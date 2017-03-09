@@ -1,6 +1,7 @@
 package x7c1.chaff.reader
 
-import x7c1.chaff.core.{Apply, FlatMap, Determined, Monad}
+import x7c1.chaff.core.Monad.{ApplyImpl, FunctorImpl}
+import x7c1.chaff.core.{Determined, FlatMap, Monad}
 
 import scala.language.{higherKinds, reflectiveCalls}
 
@@ -37,23 +38,16 @@ trait BaseProvider[R[X, A] <: BaseReader[X, A]] {
   implicit class RichUnitReaders[A](readers: Seq[R[A, Unit]])
     extends Monad.ForUnits[R[A, ?]](readers)
 
-  implicit def readerDetermined[A]: Determined[R[A, ?], A] =
+  implicit def determined[A]: Determined[R[A, ?], A] =
     new Determined[R[A, ?], A] {
       override def applied = BaseProvider.this.apply[A, A](identity)
     }
 
-  implicit def readerApply[X]: Apply[R[X, ?]] =
-    new Apply[R[X, ?]] {
-      override def apply[A, B](rf: R[X, A => B])(ra: R[X, A]): R[X, B] =
-        BaseProvider.this.flatMap(rf) { f =>
-          BaseProvider.this.flatMap(ra) { a =>
-            monad pure f(a)
-          }
-        }
-    }
-
   implicit def monad[X]: Monad[R[X, ?]] =
-    new Monad[R[X, ?]] {
+    new Monad[R[X, ?]]
+      with FunctorImpl[R[X, ?]]
+      with ApplyImpl[R[X, ?]] {
+
       override def pure[A](a: => A) = {
         BaseProvider.this.apply(_ => a)
       }
