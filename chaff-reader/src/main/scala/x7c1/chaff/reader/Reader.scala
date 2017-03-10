@@ -3,7 +3,7 @@ package x7c1.chaff.reader
 
 trait Reader[X, A] extends BaseReader[X, A] {
 
-  override type Type[T] = Reader[X, T]
+  override type This[T] = Reader[X, T]
 
   override def underlying = this
 }

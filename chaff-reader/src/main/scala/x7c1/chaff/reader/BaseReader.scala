@@ -1,24 +1,24 @@
 package x7c1.chaff.reader
 
-import x7c1.chaff.core.Monad.{ApplyImpl, FunctorImpl}
-import x7c1.chaff.core.{Determined, FlatMap, Monad}
+import x7c1.chaff.core.MonadInducible.PureFlatMap
+import x7c1.chaff.core.{Determined, FlatMap, Monad, Pure}
 
 import scala.language.{higherKinds, reflectiveCalls}
 
 
 trait BaseReader[X, A] {
 
-  type Type[T] <: BaseReader[X, T]
+  type This[T] <: BaseReader[X, T]
 
   def run: X => A
 
-  def underlying: Type[A]
+  def underlying: This[A]
 
-  def map[B](f: A => B)(implicit m: Monad[Type]): Type[B] = {
+  def map[B](f: A => B)(implicit m: Monad[This]): This[B] = {
     m.flatMap(underlying)(a => m pure f(a))
   }
 
-  def flatMap[B](f: A => Type[B])(implicit m: Monad[Type]): Type[B] = {
+  def flatMap[B](f: A => This[B])(implicit m: Monad[This]): This[B] = {
     m.flatMap(underlying)(f)
   }
 
