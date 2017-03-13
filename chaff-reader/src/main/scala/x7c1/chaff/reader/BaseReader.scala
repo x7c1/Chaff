@@ -43,11 +43,8 @@ trait BaseProvider[R[X, A] <: BaseReader[X, A]] {
       override def applied = BaseProvider.this.apply[A, A](identity)
     }
 
-  implicit def monad[X]: Monad[R[X, ?]] =
-    new Monad[R[X, ?]]
-      with FunctorImpl[R[X, ?]]
-      with ApplyImpl[R[X, ?]] {
-
+  implicit def monad[X]: Monad[R[X, ?]] = Monad.create[R[X, ?]].from[PureFlatMap](
+    new Pure[R[X, ?]] with FlatMap[R[X, ?]] {
       override def pure[A](a: => A) = {
         BaseProvider.this.apply(_ => a)
       }
@@ -55,6 +52,7 @@ trait BaseProvider[R[X, A] <: BaseReader[X, A]] {
       override def flatMap[A, B](fa: R[X, A])(f: A => R[X, B]) = {
         BaseProvider.this.flatMap(fa)(f)
       }
-    }
+    })
 
 }
+

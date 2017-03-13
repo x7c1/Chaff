@@ -19,24 +19,13 @@ object Monad {
     }
   }
 
-  trait FunctorImpl[F[_]] {
-    self: Functor[F] with Pure[F] with FlatMap[F] =>
-
-    override def map[A, B](fa: F[A])(f: A => B): F[B] = {
-      flatMap(fa) { a =>
-        pure(f(a))
-      }
+  class Factory[F[_]] {
+    def from[G[?[_]] : MonadInducible](x: G[F]): Monad[F] = {
+      implicitly[MonadInducible[G]] induceFrom x
     }
   }
 
-  trait ApplyImpl[F[_]] {
-    this: Apply[F] with Functor[F] with FlatMap[F] =>
-
-    override def apply[A, B](fab: F[A => B])(fa: F[A]): F[B] = {
-      flatMap(fab)(map(fa))
-    }
-  }
-
+  def create[F[_]]: Factory[F] = new Factory
 }
 
 trait Functor[F[_]] {
