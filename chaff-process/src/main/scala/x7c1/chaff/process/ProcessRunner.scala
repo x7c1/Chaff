@@ -5,7 +5,9 @@ import x7c1.chaff.process.HasProcessLogger.LogReader
 
 import scala.util.{Failure, Left, Right, Success, Try}
 
+
 case class ProcessRunner(command: Seq[String]) {
+
   import x7c1.chaff.process.ProcessRunner.To
 
   private def builder = Process(command)
@@ -32,7 +34,7 @@ case class ProcessRunner(command: Seq[String]) {
     def lines: To[Either[ProcessError, Seq[String]]] =
       LogReader { logger =>
         Try {
-          builder lines_! logger
+          builder lines logger
         } match {
           case Success(lines) => Right(lines.toIndexedSeq)
           case Failure(exception) => Left(ProcessError(exception))
@@ -43,6 +45,7 @@ case class ProcessRunner(command: Seq[String]) {
 }
 
 object ProcessRunner {
+
   import x7c1.chaff.reader.Reader
 
   type To[A] = Reader[HasProcessLogger, A]
